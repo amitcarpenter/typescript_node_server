@@ -1,16 +1,20 @@
-import express, {Application ,  Request, Response } from "express";
+import express, { Application, Request, Response } from "express";
 import router from "./src/routes/userRoutes";
 import mongodb_connection from "./src/config/db";
+import configureApp from "./src/config/routes"
+import dotenv from "dotenv";
 
+
+dotenv.config()
 mongodb_connection();
-const app : Application = express();
 
-const PORT = 4011;
+const app: Application = express();
+const PORT = process.env.PORT as string;
 
-app.use("/", router);
+configureApp(app);
 
 app.get("/", (req: Request, res: Response) => {
-  res.json({ Data: "mera test routes" });
+  res.send("Type Script Learing PlatForm")
 });
 
 app.listen(PORT, (): void => {

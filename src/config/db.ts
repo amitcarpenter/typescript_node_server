@@ -1,13 +1,18 @@
 import mongoose, { ConnectOptions } from "mongoose";
+import dotenv from "dotenv";
 
-const DB_URI = "mongodb://localhost/ts_practice";
+dotenv.config();
+
+const DB_URI = process.env.DB_URI as string;
 
 const connect_mongodb = async (): Promise<void> => {
   try {
-    await mongoose.connect(DB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectOptions);
+    await mongoose.connect(DB_URI,
+      //    {
+      //   useNewUrlParser: true,
+      //   useUnifiedTopology: true,
+      // } as ConnectOptions
+    );
     console.log("Database Connected SuccessFully");
   } catch (error) {
     console.log("Database Connection Error", error);
