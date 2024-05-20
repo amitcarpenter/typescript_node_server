@@ -1,24 +1,22 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-// Define the TypeScript interface
-interface UserI {
-  name: string;
-  dept: string;
+interface User_Interface {
+  username: string;
+  email: string;
+  password: string;
 }
 
-// Define the Mongoose schema
-const userSchema = new Schema<UserI>({
-  name: {
+const user_schema = new Schema<User_Interface>({
+  username: {
     type: String,
-    required: true,
+    required: [true, "username is required"],
+    trim: true,
+    unique: true,
+    minlength: [5, "username must be at least 5 characters long"],
   },
-  dept: {
+
+  password: {
     type: String,
-    required: true,
+      
   },
 });
-
-// Create the Mongoose model
-const User = model<UserI>("User", userSchema);
-
-export default User;

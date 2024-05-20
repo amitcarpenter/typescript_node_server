@@ -1,15 +1,18 @@
-import mongoose, { connect } from "mongoose";
+import mongoose, { ConnectOptions } from "mongoose";
 
 const DB_URI = "mongodb://localhost/ts_practice";
-function mongodb_connection() {
-  return connect(DB_URI)
-    .then(() => {
-      console.log("Database Connected");
-    })
-    .catch((err) => {
-      console.log("error to connection db" + err);
-      return err;
-    });
-}
 
-export default mongodb_connection;
+const connect_mongodb = async (): Promise<void> => {
+  try {
+    await mongoose.connect(DB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as ConnectOptions);
+    console.log("Database Connected SuccessFully");
+  } catch (error) {
+    console.log("Database Connection Error", error);
+    process.exit(1);
+  }
+};
+
+export default connect_mongodb;
