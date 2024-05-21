@@ -2,6 +2,7 @@ import User from "../models/userModle";
 import { Request, Response } from "express";
 import { comparePassword } from "../utils/bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
@@ -10,6 +11,54 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_EXPIRATION = process.env.JWT_EXPIRATION as string;
+
+// InterFace For the Email Varification
+interface EmailVerificationResult {
+  success: boolean;
+  error?: string;
+}
+
+// Varify Email Function
+function verifyEmail(email: string): Promise<EmailVerificationResult> {
+  return new Promise((resolve) => {
+    if (!email) {
+      resolve({ success: false, error: "Email is required" });
+      return;
+    }
+    const pythonProcess: ChildProcessWithoutNullStreams = spawn("python", [
+      "src/config/verify_email.py",
+      email,
+    ]);
+    let resultBuffer: Buffer = Buffer.alloc(0);
+    let errorBuffer: Buffer = Buffer.alloc(0);
+
+    pythonProcess.stdout.on("data", (data: Buffer) => {
+      resultBuffer = Buffer.concat([resultBuffer, data]);
+    });
+
+    pythonProcess.stderr.on("data", (data: Buffer) => {
+      errorBuffer = Buffer.concat([errorBuffer, data]);
+    });
+
+    pythonProcess.on("close", (code: number) => {
+      if (code === 0) {
+        const result = JSON.parse(resultBuffer.toString());
+        resolve(result);
+      } else {
+        const error = errorBuffer.toString() || "Unknown error occurred";
+        resolve({ success: false, error });
+      }
+    });
+  });
+}
+
+// verifyEmail("amitcarpenter19asd8@gmail.com")
+//   .then((result) => {
+//     console.log("Email verification result:", result);
+//   })
+//   .catch((error) => {
+//     console.error("Error verifying email:", error);
+//   });
 
 // Controller function for user registration
 export const registerUser = async (req: Request, res: Response) => {
