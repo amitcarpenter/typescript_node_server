@@ -6,8 +6,8 @@ tsc --version
 
 npm install -g ts-node                       => run tyscript file directly
 
-1. npm init --y - package.json
-2. tsc --init - tsconfig.json
+1. npm init --y          - package.json
+2. tsc --init            - tsconfig.json
 3. npm install @types/node
 4. npm install -g ts-node   
 5. npm install @types/mongoose mongoose

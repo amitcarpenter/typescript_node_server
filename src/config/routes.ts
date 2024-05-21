@@ -6,7 +6,7 @@ const configureApp = (app: Application): void => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.use("/auth", router);
+  app.use("/api", router);
 };
 
 export default configureApp;
