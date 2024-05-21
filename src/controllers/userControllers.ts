@@ -52,19 +52,18 @@ function verifyEmail(email: string): Promise<EmailVerificationResult> {
   });
 }
 
-// verifyEmail("amitcarpenter19asd8@gmail.com")
-//   .then((result) => {
-//     console.log("Email verification result:", result);
-//   })
-//   .catch((error) => {
-//     console.error("Error verifying email:", error);
-//   });
+
 
 // Controller function for user registration
 export const registerUser = async (req: Request, res: Response) => {
   const { username, password, email, role } = req.body;
-
   try {
+    const result = await verifyEmail(email);
+
+    if (!result.success) {
+      return res.status(400).json({ message: "Email is not valid. Please provide a valid email address." });
+    }
+
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
