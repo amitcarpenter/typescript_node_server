@@ -1,4 +1,4 @@
-import User from "../models/userModle";
+import { User } from "../models/User";
 import { Request, Response } from "express";
 import { comparePassword } from "../utils/bcrypt";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
@@ -52,25 +52,22 @@ function verifyEmail(email: string): Promise<EmailVerificationResult> {
   });
 }
 
-
-
 // Controller function for user registration
 export const registerUser = async (req: Request, res: Response) => {
   const { username, password, email, role } = req.body;
   try {
     const result = await verifyEmail(email);
-
     if (!result.success) {
-      return res.status(400).json({ message: "Email is not valid. Please provide a valid email address." });
+      return res.status(400).json({
+        message: "Email is not valid. Please provide a valid email address.",
+      });
     }
 
-    // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Create the new user
     const newUser = new User({ username, password, email, role });
     await newUser.save();
 
@@ -89,39 +86,31 @@ export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    // Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    // Validate password
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    // Generate access and refresh tokens with user role included
     const userId: any = user._id;
     const userRole: string = user.role;
     const accessToken = generateAccessToken({ userId, userRole });
     const refreshToken = generateRefreshToken({ userId, userRole });
 
-    // Send access token as a cookie
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       sameSite: "strict",
-      maxAge: 900000, // 15 minutes
+      maxAge: 900000,
     });
 
-    // Send refresh token as a cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "strict",
-      maxAge: 604800000, // 7 days
+      maxAge: 604800000,
     });
 
-    // Send response with user's role
     res.status(200).json({
       message: "Login successful",
       accessToken,
