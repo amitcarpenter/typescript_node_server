@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Tag } from "../models/Tag";
+import { Product } from "../models/Product";
 
 // Create a new tag
 const createTag = async (req: Request, res: Response) => {
@@ -72,6 +73,19 @@ const deleteTag = async (req: Request, res: Response) => {
     if (!deletedTag) {
       return res.status(404).json({ message: "Tag not found" });
     }
+
+    Product.findOneAndUpdate(
+      { tags: deletedTag._id },
+      { $pull: { tags: deletedTag._id } }
+    )
+      .then(() => {
+        console.log("Tags removed from the Product successfully");
+      })
+      .catch((error) => {
+        console.error("Error removing Tags:", error);
+      });
+
+
     return res.status(200).json({
       message: "Tag deleted successfully",
       tag: deletedTag,
@@ -92,6 +106,14 @@ const deleteMultipleTags = async (req: Request, res: Response) => {
     }
 
     const result = await Tag.deleteMany({ _id: { $in: ids } });
+
+    Product.updateMany({ tags: { $in: ids } }, { $pullAll: { tags: ids } })
+      .then(() => {
+        console.log("tags removed from the Product successfully");
+      })
+      .catch((error: any) => {
+        console.error("Error removing tags:", error);
+      });
     return res.status(200).json({
       message: `${result.deletedCount} tags deleted successfully`,
     });

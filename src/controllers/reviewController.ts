@@ -83,7 +83,7 @@ const deleteReviewById = async (req: Request, res: Response) => {
         console.log("Review removed from the Product successfully");
       })
       .catch((error) => {
-        console.error("Error removing product from the Review:", error);
+        console.error("Error removing Reviews from the Product:", error);
       });
 
     res
@@ -109,9 +109,10 @@ const deleteMultipleReviews = async (req: Request, res: Response) => {
     // Delete multiple reviews by IDs
     const deletedReviews = await Review.deleteMany({ _id: { $in: ids } });
 
-
-    
-    Product.updateMany({ reviews: { $in: ids } }, { $pullAll: { reviews: ids } })
+    Product.updateMany(
+      { reviews: { $in: ids } },
+      { $pullAll: { reviews: ids } }
+    )
       .then(() => {
         console.log("Reviews removed from the Product successfully");
       })
