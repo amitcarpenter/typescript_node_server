@@ -78,3 +78,33 @@ export const getAllOrders = async (req: Request, res: Response) => {
   const orders = await Order.find({}).populate('user', 'id name');
   res.json(orders);
 };
+
+
+export const deleteOrder = async (req: Request, res: Response) => {
+    const id = req.params
+    const order = await Order.findById(req.params.id);
+  
+    if (order) {
+      await Order.findByIdAndDelete(id);
+      res.json({ message: 'Order removed' });
+    } else {
+      res.status(404).json({ message: 'Order not found' });
+    }
+  };
+
+
+  export const deleteMultipleOrders = async (req: Request, res: Response) => {
+    const { ids } = req.body;
+  
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ message: 'Invalid order IDs' });
+    }
+  
+    const result = await Order.deleteMany({ _id: { $in: ids } });
+  
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'No orders found to delete' });
+    }
+  
+    res.json({ message: `${result.deletedCount} orders removed` });
+  };
