@@ -62,14 +62,15 @@ export const registerUser = async (req: Request, res: Response) => {
         message: "Email is not valid. Please provide a valid email address.",
       });
     }
-
+    
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-
+    
     const newUser = new User({ username, password, email, role });
     await newUser.save();
+    console.log("user Register Successfully")
 
     return res
       .status(201)
