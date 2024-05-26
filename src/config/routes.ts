@@ -8,6 +8,7 @@ import product_router from "../routes/productRoutes";
 import inventory_router from "../routes/inventoryRoutes";
 import tags_router from "../routes/tagRoutes";
 import review_router from "../routes/reviewRoutes";
+import setting_router from "../routes/settingRoutes";
 
 const configureApp = (app: Application): void => {
   app.use(express.json());
@@ -19,6 +20,7 @@ const configureApp = (app: Application): void => {
   app.use("/api/inventory", authenticateUser, inventory_router);
   app.use("/api/tags", authenticateUser, tags_router);
   app.use("/api/reviews", authenticateUser, review_router);
+  app.use("/api/settings", authenticateUser, setting_router);
 };
 
 export default configureApp;
