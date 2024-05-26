@@ -23,4 +23,6 @@ const configureApp = (app: Application): void => {
   app.use("/api/settings", authenticateUser, setting_router);
 };
 
+
+
 export default configureApp;

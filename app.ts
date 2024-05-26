@@ -10,6 +10,7 @@ mongodb_connection();
 
 const app: Application = express();
 const PORT = process.env.PORT as string;
+const APP_URL = process.env.APP_URL as string;
 
 configureApp(app);
 
@@ -18,5 +19,5 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.listen(PORT, (): void => {
-  console.log(`Server is working on ${PORT}`);
+  console.log(`Server is working on ${APP_URL}`);
 });
